@@ -42,14 +42,19 @@
  *
  * 
  */
-
+#if defined(_WIN64) || defined(WIN64) || defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
+#define WINDOWS
+#endif
+#if defined(__linux) || defined(__unix) || defined(__posix)
 #define LINUX
+#endif
+//#define LINUX
 //#define WINDOWS
 #ifdef LINUX
 #include <iostream>
 #endif
 #ifdef WINDOWS
-#include <iostream.h>
+#include <iostream>
 #include <conio.h>
 #endif
 
@@ -79,25 +84,34 @@ void menu_display(){
         cout << endl;
         //cout << "############################################################";
     #ifdef LINUX
+        //cout<<"here";
         //if(system("clear")) { cout<<"\n\n\n\n"; }    //DONE portability
         if(system("date")) { cout<<"\n\n"; }
     #endif
     #ifdef WINDOWS
         clrscr();         //not working
-        system("clear");
+        system("cls");
     #endif
         cout << "\n##############################################################";
-        cout << "\n#        'a'   --  add data for a new student                #"
+        cout << "\n#        'b'   --  add bill info                             #"
+                "\n#        'm'   --  manage items in database                  #"
+                "\n#        'a'   --  add data for a new student                #"
                 "\n#        'd'   --  display data for all stusents             #"
                 "\n#        'w'   --  write all student data to disk            #"
                 "\n#        'r'   --  read all student data from disk           #"
                 "\n#        's'   --  search database by Roll No.               #"
                 "\n#        'x'   --  exit                                      #";
         cout << "\n##############################################################";
+        //Stud::readFromDisk();
         cout << "\nEnter selection: ";
         cin>>choice;
         switch(choice){
         //cout<<"in switch";
+
+        case 'b':
+            Stud::addBillInfo(); break;
+        case 'm':
+            manage_display(); break;
         case 'a': //add a student to database
             Stud::add(); break;
         case 'd': //display all students
@@ -111,12 +125,11 @@ void menu_display(){
         case 'x': inLoop=false; break; //exit program
         default: cout << "\nUnknown command";
         }//end switch
-        //getchar();
-        //if(system("clear")) { cout<<"\n\n\n\n"; }    //TODO portability
+//        getchar();
+//        if(system("clear")) { cout<<"\n\n\n\n"; }    //TODO portability
     }//end while
     exit_message();
     //menu_input(choice);
-
 }
 void welcome_message()    //*TODO  use thread sleep like functions too (needed at various places.)  */
 {
@@ -168,6 +181,61 @@ void disk_message(){
           "              |____!_!____|        \n"
           "                                   \n"
           " Performing Disk Operation. Don't close. \n";
+}
+void manage_display(){
+    //TODO include functionality that user inputs values using keyboard arrow keys instead of entering numbers.
+    //TODO make a menu displayed to shopkeeper    // add an option to directly add a daily expenditure of a Student.
+//    welcome_message();
+    char choice;
+    bool inLoop=true;
+    while (inLoop)
+    {
+        cout << endl;
+        //cout << "############################################################";
+    #ifdef LINUX
+        //cout<<"here";
+        //if(system("clear")) { cout<<"\n\n\n\n"; }    //DONE portability
+        if(system("date")) { cout<<"\n\n"; }
+    #endif
+    #ifdef WINDOWS
+        clrscr();         //not working
+        system("cls");
+    #endif
+        cout << "\n##############################################################";
+        cout << "\n#               Manage the Items stored                      #"\
+                "\n#        'a'   --  add data for a new student                #"
+                "\n#        'd'   --  display data for all stusents             #"
+                "\n#        'w'   --  write all item data to disk               #"
+                "\n#        'r'   --  read all item data from disk              #"
+                "\n#        's'   --  search database by Code                   #"
+                "\n#        'x'   --  exit management interface                 #";
+        cout << "\n##############################################################";
+        //Stud::readFromDisk();
+        cout << "\nEnter selection: ";
+        cin>>choice;
+        switch(choice){
+        //cout<<"in switch";
+        case 'm':
+            manage_display(); break;
+        case 'a': //add a item to database
+            Item::add(); break;
+        case 'd': //display all students
+            Item::display(); break;
+        case 'w': //write items from memory to file
+            Item::writeItemToDisk(); break;
+        case 'r': //read all items from file
+            Item::readItemFromDisk(); break;
+        case 's': //search by roll
+            Item::searchByCode(true); break;
+        case 'x':
+            inLoop=false; break; //exit program
+        default:
+            cout << "\nUnknown command";
+        }//end switch
+//        getchar();
+//        if(system("clear")) { cout<<"\n\n\n\n"; }    //TODO portability
+    }//end while
+    menu_display();
 }
 
 //---menu to be displayed to user--

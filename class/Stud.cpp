@@ -48,10 +48,17 @@
  *      * New:
  *      * Modified: readFromDisk, writeToDisk, putData
  *              Removed all possible read-write errors
- *
+ *  2013 - 04 - 26 Rishabh Gupta < UE 113080 >
+ *        >New :  direct   bill input function Stud :: addBillInfo()
+ *        >Modified :  commented date facilities and added getch() at various places.
  */
-
+#if defined(_WIN64) || defined(WIN64) || defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
+#define WINDOWS
+#endif
+#if defined(__linux) || defined(__unix) || defined(__posix)
 #define LINUX
+#endif
+//#define LINUX
 //#define WINDOWS
 #ifdef LINUX
 #include <iostream>
@@ -65,6 +72,7 @@
 #include <fstream>
 
 #include "Stud.h"
+#include "Item.h"
 
 using namespace std;
 
@@ -72,6 +80,7 @@ using namespace std;
 
 //static variables
 int Stud::n; //current number of employees, init 0
+bool Stud::readDataOnce=false;
 Stud* Stud::arrap[MAXSTUD]; //array of ptrs to emps
 //-------------- Class: Stud -------------------
 ////////////////////////////////////////////////////////////////
@@ -81,7 +90,6 @@ Stud::~Stud(){
         delete arrap[i];
     }
 }
-
 //add student to list in memory
 void Stud::add()
 {
@@ -101,29 +109,35 @@ void Stud::display()
 //--------------------------------------------------------------//write all current memory objects to file
 void Stud::writeToDisk()
 {
+    Item::writeItemToDisk();
     int size;
     cout << "Writing " << n << " Students to disk.\n";
     disk_message();
     ofstream ouf; //open ofstream in binary
     //ouf.open("data/Stud.DAT", ios::app | ios::binary);
     ouf.open("data/Stud.DAT", ios::trunc | ios::binary);
-    if(!ouf){ cout << "\nCan't open file\n"; return; }
+    if(!ouf){ cout << "\nCan't open file Stud.DAT\n"; return; }
     for(int j=0; j<n; j++){ //for every Stud object
         size=sizeof(Stud);
         //write student object to file
         ouf.write( (char*)(arrap[j]), size );
-        if(!ouf){ cout << "\nERROR: Can't write to file\n"; return; }
+        if(!ouf){ cout << "\nERROR: Can't write to file Stud.DAT\n"; return; }
     }
 }
 //--------------------------------------------------------------//read data for all students from file into memory
 void Stud::readFromDisk()
 {
-    int size; //size of employee object
+    if(readDataOnce){
+        cout<<"\nHey I already read the Student data from disk !\n";
+        return;
+    }
     disk_message();
+    Item::readItemFromDisk();
+    int size; //size of employee object
     ifstream inf; //open ifstream in binary
     //Stud temparrap[MAXSTUD];
     inf.open("data/Stud.DAT", ios::binary);
-    if(!inf){ cout << "\nCan't open file\n"; return; }
+    if(!inf){ cout << "\nCan't open file Stud.DAT\n"; return; }
     //inf.seekg(0);
     for(int i=0;i<n;i++){
         delete arrap[i];
@@ -135,12 +149,15 @@ void Stud::readFromDisk()
         arrap[n]=new Stud;
         inf.read( reinterpret_cast<char*>(arrap[n]), size );
         if(n==0 && !inf) //error but not eof
-        { cout << "\nCan't read data from file\n"; bug_message(); return; }
+        { cout << "\nCan't read data from file Stud.DAT\n"; bug_message(); return; }
         //arrap[n]->putData(); //display();
         n++;
     }//end while
+
+    inf . close();
     delete arrap[n--];  //empty no data in this record
     cout << "Read " << n << " students\n";
+    readDataOnce=true;
     //Stud::display();
 }
 void Stud::getData(){
@@ -186,7 +203,7 @@ void Stud::putData()
         <<setw(11)<<"Phone # : \t"<<phoneNo<<"\n"
         <<setw(11)<<"Pending Bill : Rs.\t"<<bill<<endl;
 }
-void Stud::searchByRoll(){
+int Stud::searchByRoll(bool print){
     cout<<"\nEnter Roll #: ";
     int rollKey;
     cin>>rollKey;
@@ -199,18 +216,147 @@ void Stud::searchByRoll(){
             found=true;
         }//end if
     }//end for
+    i-=1;
     if(found){
-        //--i;
-        cout<<'\n'<<" Found :)\n"<<i<<":";
-        arrap[--i]->putData();  //compensating extra loop
-        //arrap[i]->putData();  //compensating extra loop
+        if(print){
+            //--i;
+            cout<<'\n'<<" Found :)\n"<<i+1<<":";
+            arrap[i]->putData();  //compensating extra loop
+            //arrap[i]->putData();  //compensating extra loop
+        }
     }
     else{
         cout<<"\nSorry student not found in database :(";
     }
+    return (i);
 }
 
+void Stud :: addBillInfo()     //  code finalised and checked..
+{
+    int roll ;
+    bool isFound = false ;
+    int indexStud=searchByRoll(false);  //don't print
+    cout<<indexStud;
+    arrap[indexStud]->putData();
+//    cout<<"\nEnter Item Code: ";
+//    char itemCode[5];
+//    cin>>itemCode;
+//    int indexItem=Item::searchByCode();
+//    int costItem = Item::searchCost()
+//    arrap[indexStud]->bill += Item::arrapItem[indexItem]->cost ;
+    arrap[indexStud]->bill += Item::searchCost() ;
 
+/*
+    ifstream file ;
+    file . open ( "data/Stud.DAT", ios:: binary);
+    if  (!file) { cout<<"\nUnable to open file !"; return ;}
+    while ( !file. eof () )
+    {
+        file . read ( reinterpret_cast<char* > (st ) , sizeof(Stud) );
+        if ( st->rollNo == roll )  {  isFound = true ;    break ; }
+    }
+    if ( isFound )
+    {
+        int add ;
+        cout<<"\nEnter amount to add :";
+        cin>>add;
+        st->bill += add ;
+        ofstream first_half  ("data/temp.DAT" , ios::binary);
+        file . seekg ( ios :: beg) ;
+
+        while ( true )
+        {
+            Stud* student = new Stud ;
+            file . read ( reinterpret_cast<char*> ( student) , sizeof(Stud));
+            if ( student->rollNo == roll ) { break; }
+            first_half . write ( reinterpret_cast<char*> ( student ) , sizeof( Stud));
+        }
+        first_half . write ( reinterpret_cast<char*> ( st ) , sizeof( Stud));
+        while ( ! file . eof ())
+        {
+            Stud* student = new Stud ;
+            file . read ( reinterpret_cast<char*> ( student) , sizeof(Stud));    if( file . eof () ) break;
+            first_half . write ( reinterpret_cast<char*> ( student ) , sizeof( Stud));
+        }
+        file . close();
+        first_half . close();
+#ifdef  WINDOWS
+        system("del data\\Stud.DAT > temp.txt");
+        system("move data\\temp.DAT data\\Stud.DAT  > temp.txt");
+        system ( " del temp.txt");
+#endif
+#ifdef LINUX   // TODO  modify according to LINUX
+        system ( "rm   data\\Stud.DAT > temp.txt");
+        system ( "mv   data\\temp.DAT   data\\Stud.DAT >  temp.txt");
+        system ( " rm temp.txt");
+#endif
+        cout<<"\nSuccessfully Added!";
+    }
+    else
+    {
+        cout<<"\nRoll No. not found..";
+    }
+    //getch();
+    */
+}
+void Stud :: addBillInfo_rs()     //  code finalised and checked..
+{
+    int roll ;
+    bool isFound = false ;
+    cout<<"\nEnter student roll_no  :" ;
+    cin>>roll ;
+    Stud* st =new Stud ;
+    ifstream file ;
+    file . open ( "data/Stud.DAT", ios:: binary);
+    if  (!file) { cout<<"\nUnable to open file !"; return ;}
+    while ( !file. eof () )
+    {
+        file . read ( reinterpret_cast<char* > (st ) , sizeof(Stud) );
+        if ( st->rollNo == roll )  {  isFound = true ;    break ; }
+    }
+    if ( isFound )
+    {
+        int add ;
+        cout<<"\nEnter amount to add :";
+        cin>>add;
+        st->bill += add ;
+        ofstream first_half  ("data/temp.DAT" , ios::binary);
+        file . seekg ( ios :: beg) ;
+
+        while ( true )
+        {
+            Stud* student = new Stud ;
+            file . read ( reinterpret_cast<char*> ( student) , sizeof(Stud));
+            if ( student->rollNo == roll ) { break; }
+            first_half . write ( reinterpret_cast<char*> ( student ) , sizeof( Stud));
+        }
+        first_half . write ( reinterpret_cast<char*> ( st ) , sizeof( Stud));
+        while ( ! file . eof ())
+        {
+            Stud* student = new Stud ;
+            file . read ( reinterpret_cast<char*> ( student) , sizeof(Stud));    if( file . eof () ) break;
+            first_half . write ( reinterpret_cast<char*> ( student ) , sizeof( Stud));
+        }
+        file . close();
+        first_half . close();
+#ifdef  WINDOWS
+        system("del data\\Stud.DAT > temp.txt");
+        system("move data\\temp.DAT data\\Stud.DAT  > temp.txt");
+        system ( " del temp.txt");
+#endif
+#ifdef LINUX   // TODO  modify according to LINUX
+        system ( "rm   data\\Stud.DAT > temp.txt");
+        system ( "mv   data\\temp.DAT   data\\Stud.DAT >  temp.txt");
+        system ( " rm temp.txt");
+#endif
+        cout<<"\nSuccessfully Added!";
+    }
+    else
+    {
+        cout<<"\nRoll No. not found..";
+    }
+    //getch();
+}
 void Stud::store(){ //old method
     if(isStored){
         char again;

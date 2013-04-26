@@ -50,8 +50,13 @@
  *      * Modified: Stud(),
  *
  */
-
+#if defined(_WIN64) || defined(WIN64) || defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
+#define WINDOWS
+#endif
+#if defined(__linux) || defined(__unix) || defined(__posix)
 #define LINUX
+#endif
+//#define LINUX
 //#define WINDOWS
 #ifdef LINUX
 #include <iostream>
@@ -97,13 +102,16 @@ private:  // update variable names in member functions too.
     bool isStored;  //true if student info is stored, false otherwise
 protected:
     static int n; //current number of studs
+    static bool readDataOnce;
     static Stud* arrap[]; //array of ptrs to Studs
 public:
     static void add();          //add a new student
     static void display();      //display all student's info
     static void readFromDisk(); //read from disk file
     static void writeToDisk();  //write to disk file
-    static void searchByRoll();
+    static int searchByRoll(bool print = true) ;    //be default print data
+    static void addBillInfo () ;
+    static void addBillInfo_rs () ;
     Stud(){ isStored=false; bill=0; }    //empty constructor
     ~Stud();
     //TODO : rollNo(0),name[0](0),dept[0](0),phoneNo[0](0) // initialised values. first element of each assigned to 0 .

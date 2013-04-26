@@ -44,8 +44,13 @@
  *      * Modified: -
  *
  */
-
+#if defined(_WIN64) || defined(WIN64) || defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
+#define WINDOWS
+#endif
+#if defined(__linux) || defined(__unix) || defined(__posix)
 #define LINUX
+#endif
+//#define LINUX
 //#define WINDOWS
 #ifdef LINUX
 #include <iostream>

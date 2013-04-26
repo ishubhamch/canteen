@@ -39,8 +39,13 @@
  *      * Modified: Item()
  *
  */
-
+#if defined(_WIN64) || defined(WIN64) || defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
+#define WINDOWS
+#endif
+#if defined(__linux) || defined(__unix) || defined(__posix)
 #define LINUX
+#endif
+//#define LINUX
 //#define WINDOWS
 #ifdef LINUX
 #include <iostream>
@@ -61,18 +66,52 @@
 //****Class Definitions******
 
 //Information about a particular food Item
+// performs file I/O on employee objects
+// handles different sized objects
+#include <fstream> //for file-stream functions
+#include <iostream>
+#include <typeinfo> //for typeid()
+using namespace std;
+#include <stdlib.h> //for exit()
+
+#include "Stud.h"
+#include "../function.h"   //for bug, disk_messages etc.
+const int MAXCODE = 10; //maximum length of last names  //TODO extern
+const int MAXITEM = 100; //maximum number of employees
+const int MAXDESC = 100;
+
+////////////////////////////////////////////////////////////////
 class Item{
     private:
+        char code[MAXCODE];
+        char description[MAXDESC];  //Item description
         float cost;   //cost of food Item
         bool isStored;
+    protected:
+        static int n; //current number of items
+        static bool readItemOnce;
+        static Item* arrapItem[]; //array of ptrs to Studs
     public:
-        Item(){ isStored=false; }
+        //friend void Stud::addBillInfo();
+        Item(){ isStored=false; }    //empty constructor
+        ~Item();
         Item(float); //Constructor
         void updateCost(float);
         float outputCost(){ return cost; }
+        void getData();
+        void getData(char);    //DONE
+        void putData();
         void store();
         void retrieve();
+        static void add();          //add a new item
+        static void display();      //display all item and codes
+        static void readItemFromDisk(); //read from disk file
+        static void writeItemToDisk();  //write to disk file
+        static int searchByCode(bool print = false) ;    //be default don't print data
+        static float searchCost();
 };
+
+
 
 //!!!!!!!!!!!!!!!!!!!! End Editing Here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
