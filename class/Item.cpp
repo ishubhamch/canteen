@@ -4,8 +4,8 @@
  * Copyright 2013 Shubham Chaudhary <UE113090>
  *                Rishabh Gupta <UE113080>
  *      Sachin Tehlan <UE113082>
- *      Upasana Sadana <>
- *
+ *      Upasana Sadana <UE113098>
+ *      Surdeep Singh <UE113094>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -38,7 +38,21 @@
  *              Added License, Header, ChangeLog, ifdef etc.
  *              functions->    store(),retrieve()
  *      * Modified: Item::Item(float)
- *
+ *  2013-04-27  Shubham Chaudhary  <shubhamchaudhary92@gmail.com>
+ *      * New:  static var-> n, arrayofpointer
+ *              static fun-> add,display,readFromDisk,writeToDisk
+ *              fun-> getData, putData, store, retrieve
+ *              var-> isStored
+ *      * Modified: Item(),
+ *  2013-04-28  Shubham Chaudhary  <shubhamchaudhary92@gmail.com>
+ *      * New:  searchByCode(), searchCost()
+ *      * Modified:
+ *  2013-04-30  Shubham Chaudhary  <UE113090>
+ *      * New:
+ *      * Modified: readFromDisk, writeToDisk, putData
+ *              Removed all possible read-write errors
+ *  2013-04-30  Shubham Chaudhary  <UE113090>
+ *      * Modified: More defensive search functions
  */
 #if defined(_WIN64) || defined(WIN64) || defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
 #define WINDOWS
@@ -52,7 +66,7 @@
 #include <iostream>
 #endif
 #ifdef WINDOWS
-#include <iostream.h>
+#include <iostream>
 #include <conio.h>
 #endif
 
@@ -129,6 +143,7 @@ void Item::readItemFromDisk()
     inf.open("data/Item.DAT", ios::binary);
     if(!inf){ cout << "\nCan't open file Item.DAT\n"; return; }
     //inf.seekg(0);
+//    delete[] arrapItem;
     for(int i=0;i<n;i++){
         delete arrapItem[i];
     }
@@ -199,6 +214,8 @@ int Item::searchByCode(bool print){
 }
 float Item::searchCost(){
     int indexItem=Item::searchByCode();
+    if(indexItem==(-1))
+        return(-1);
     return (arrapItem[indexItem]->cost);
 }
 

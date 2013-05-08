@@ -5,7 +5,8 @@
  *      Shubham Chaudhary <UE113090>
  *      Rishabh Gupta <UE113080>
  *      Sachin Tehlan <UE113082>
- *      Upasana Sadana <>
+ *      Upasana Sadana <UE113098>
+ *      Surdeep Singh <UE113094>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +68,8 @@
 #include <string>
 #include <iomanip>
 #include <fstream>
+#include <ctime>
+#include <time.h>
 
 #include "function.h"
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,15 +91,20 @@ int main (int argc, char* argv[]){
 
     if(argc!=1){
         cout<<"\nInvalid command line arguments ! ! !\n";
+        for(int i=1;i<argc;i++){
+            cout<<"\t"<<argv[i];
+        }
     }
     #ifdef LINUX
     if(system("clear")) { cout<<"\n\n\n\n"; }    //DONE portability
-    if(system("date")) { cout<<"\n\n"; }
+//    if(system("date")) { cout<<"\n\n"; }
     #endif
     #ifdef WINDOWS
-     clrscr();         //not working
-     system("clear");
+    clrscr();         //not working
+//    system("DATE /T");
+    system("clear");
     #endif
+    cout<<currentDateTime();
 
 
 //!!!!!!!!!!!!!!!! Start Editing Here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

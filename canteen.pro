@@ -8,5 +8,5 @@ DEPENDPATH += . class
 INCLUDEPATH += . class
 
 # Input
-HEADERS += function.h class/Item.h class/Stud.h class/Student.h
-SOURCES += function.cpp main.cpp class/Item.cpp class/Stud.cpp class/Student.cpp
+HEADERS += function.h class/Item.h class/Stud.h
+SOURCES += function.cpp main.cpp class/Item.cpp class/Stud.cpp

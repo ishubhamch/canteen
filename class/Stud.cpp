@@ -4,8 +4,8 @@
  * Copyright 2013 Shubham Chaudhary <UE113090>
  *                Rishabh Gupta <UE113080>
  *      Sachin Tehlan <UE113082>
- *      Upasana Sadana <>
- *
+ *      Upasana Sadana <UE113098>
+ *      Surdeep Singh <UE113094>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -51,6 +51,8 @@
  *  2013 - 04 - 26 Rishabh Gupta < UE 113080 >
  *        >New :  direct   bill input function Stud :: addBillInfo()
  *        >Modified :  commented date facilities and added getch() at various places.
+ *  2013-04-30  Shubham Chaudhary  <UE113090>
+ *      * Modified: More defensive search functions
  */
 #if defined(_WIN64) || defined(WIN64) || defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
 #define WINDOWS
@@ -64,7 +66,7 @@
 #include <iostream>
 #endif
 #ifdef WINDOWS
-#include <iostream.h>
+#include <iostream>
 #include <conio.h>
 #endif
 
@@ -86,6 +88,7 @@ Stud* Stud::arrap[MAXSTUD]; //array of ptrs to emps
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 Stud::~Stud(){
+//    delete []arrap;
     for(int i=0;i<=n;i++){
         delete arrap[i];
     }
@@ -139,9 +142,9 @@ void Stud::readFromDisk()
     inf.open("data/Stud.DAT", ios::binary);
     if(!inf){ cout << "\nCan't open file Stud.DAT\n"; return; }
     //inf.seekg(0);
-    for(int i=0;i<n;i++){
-        delete arrap[i];
-    }
+//    for(int i=0;i<n;i++){
+//        delete arrap[i];
+//    }
     n = 0; //no students in memory yet
     while(inf)
     {
@@ -203,6 +206,13 @@ void Stud::putData()
         <<setw(11)<<"Phone # : \t"<<phoneNo<<"\n"
         <<setw(11)<<"Pending Bill : Rs.\t"<<bill<<endl;
 }
+/*
+ *
+ * name:    searchByRoll
+ * @param   true,false for print & don't print rspv.
+ * @return  int - index of roll no in arrap
+ *
+ */
 int Stud::searchByRoll(bool print){
     cout<<"\nEnter Roll #: ";
     int rollKey;
@@ -224,81 +234,46 @@ int Stud::searchByRoll(bool print){
             arrap[i]->putData();  //compensating extra loop
             //arrap[i]->putData();  //compensating extra loop
         }
+        return(i);
     }
     else{
         cout<<"\nSorry student not found in database :(";
+        return(-1);
     }
-    return (i);
 }
 
 void Stud :: addBillInfo()     //  code finalised and checked..
 {
-    int roll ;
-    bool isFound = false ;
+    //int roll ;
+    //bool isFound = false ;
     int indexStud=searchByRoll(false);  //don't print
-    cout<<indexStud;
-    arrap[indexStud]->putData();
-//    cout<<"\nEnter Item Code: ";
-//    char itemCode[5];
-//    cin>>itemCode;
-//    int indexItem=Item::searchByCode();
-//    int costItem = Item::searchCost()
-//    arrap[indexStud]->bill += Item::arrapItem[indexItem]->cost ;
-    arrap[indexStud]->bill += Item::searchCost() ;
+    if(indexStud!=(-1)){
+        cout<<indexStud;
+        arrap[indexStud]->putData();
+        //    cout<<"\nEnter Item Code: ";
+        //    char itemCode[5];
+        //    cin>>itemCode;
+        //    int indexItem=Item::searchByCode();
+        //    int costItem = Item::searchCost()
+        //    arrap[indexStud]->bill += Item::arrapItem[indexItem]->cost ;
 
-/*
-    ifstream file ;
-    file . open ( "data/Stud.DAT", ios:: binary);
-    if  (!file) { cout<<"\nUnable to open file !"; return ;}
-    while ( !file. eof () )
-    {
-        file . read ( reinterpret_cast<char* > (st ) , sizeof(Stud) );
-        if ( st->rollNo == roll )  {  isFound = true ;    break ; }
-    }
-    if ( isFound )
-    {
-        int add ;
-        cout<<"\nEnter amount to add :";
-        cin>>add;
-        st->bill += add ;
-        ofstream first_half  ("data/temp.DAT" , ios::binary);
-        file . seekg ( ios :: beg) ;
-
-        while ( true )
-        {
-            Stud* student = new Stud ;
-            file . read ( reinterpret_cast<char*> ( student) , sizeof(Stud));
-            if ( student->rollNo == roll ) { break; }
-            first_half . write ( reinterpret_cast<char*> ( student ) , sizeof( Stud));
+        int costItem = Item::searchCost();
+        if(costItem!=(-1)){
+        arrap[indexStud]->bill += costItem ;
+        cout<<"\nTRANSACTION SUCCESS: New Balance = "<<arrap[indexStud]->bill ;
+        }else{
+            cout<<"\nTRANSACTION FAILURE: Nothing added";
         }
-        first_half . write ( reinterpret_cast<char*> ( st ) , sizeof( Stud));
-        while ( ! file . eof ())
-        {
-            Stud* student = new Stud ;
-            file . read ( reinterpret_cast<char*> ( student) , sizeof(Stud));    if( file . eof () ) break;
-            first_half . write ( reinterpret_cast<char*> ( student ) , sizeof( Stud));
-        }
-        file . close();
-        first_half . close();
-#ifdef  WINDOWS
-        system("del data\\Stud.DAT > temp.txt");
-        system("move data\\temp.DAT data\\Stud.DAT  > temp.txt");
-        system ( " del temp.txt");
-#endif
-#ifdef LINUX   // TODO  modify according to LINUX
-        system ( "rm   data\\Stud.DAT > temp.txt");
-        system ( "mv   data\\temp.DAT   data\\Stud.DAT >  temp.txt");
-        system ( " rm temp.txt");
-#endif
-        cout<<"\nSuccessfully Added!";
     }
-    else
-    {
-        cout<<"\nRoll No. not found..";
-    }
-    //getch();
-    */
 }
+void Stud::displayTotalPendingBill(){
+    int total=0;
+    for(int i=0;i<n;i++){
+        total+=arrap[i]->bill;
+    }
+    cout<<"\nTotal Pending Bill of all Students: Rs. "<<total;
+}
+
 void Stud :: addBillInfo_rs()     //  code finalised and checked..
 {
     int roll ;
@@ -340,14 +315,14 @@ void Stud :: addBillInfo_rs()     //  code finalised and checked..
         file . close();
         first_half . close();
 #ifdef  WINDOWS
-        system("del data\\Stud.DAT > temp.txt");
-        system("move data\\temp.DAT data\\Stud.DAT  > temp.txt");
-        system ( " del temp.txt");
+//        system("del data\\Stud.DAT > temp.txt");
+//        system("move data\\temp.DAT data\\Stud.DAT  > temp.txt");
+//        system ( " del temp.txt");
 #endif
 #ifdef LINUX   // TODO  modify according to LINUX
-        system ( "rm   data\\Stud.DAT > temp.txt");
-        system ( "mv   data\\temp.DAT   data\\Stud.DAT >  temp.txt");
-        system ( " rm temp.txt");
+//        system ( "rm   data\\Stud.DAT > temp.txt");
+//        system ( "mv   data\\temp.DAT   data\\Stud.DAT >  temp.txt");
+//        system ( " rm temp.txt");
 #endif
         cout<<"\nSuccessfully Added!";
     }

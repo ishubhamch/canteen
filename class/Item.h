@@ -4,8 +4,8 @@
  * Copyright 2013 Shubham Chaudhary <shubhamchaudhary92@gmail.com>
  *                Rishabh Gupta <2012rish@gmail.com>
  *      Sachin Tehlan <UE113082>
- *      Upasana Sadana <>
- *
+ *      Upasana Sadana <UE113098>
+ *      Surdeep Singh <UE113094>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -51,7 +51,7 @@
 #include <iostream>
 #endif
 #ifdef WINDOWS
-#include <iostream.h>
+#include <iostream>
 #include <conio.h>
 #endif
 

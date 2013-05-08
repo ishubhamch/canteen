@@ -4,8 +4,8 @@
  * Copyright 2013 Shubham Chaudhary <UE113090>
  *                Rishabh Gupta <UE113080>
  *      Sachin Tehlan <UE113082>
- *      Upasana Sadana <>
- *
+ *      Upasana Sadana <UE113098>
+ *      Surdeep Singh <UE113094>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -36,9 +36,13 @@
  *       > New: menu_input(),     // labels preferred over loops in case of wrong enteries.
  *       > Modified : menu_display(),menu_input()
  *  2013-03-29  Shubham Chaudhary <UE113090>
- *      * Modified: Function menu_input(): used loops instead of goto.
+ *      * Modified: Function menu_input(): used loops instead of GOTO.
  *  2013-04-13  Shubham Chaudhary  <shubhamchaudhary92@gmail.com>
  *      * Modified: menu_display for Stud class
+ *  2013-03-26  Shubham Chaudhary <UE113090>
+ *      * New: welcome_message(), exit_message(), disk_message(), bug_message()
+ *  2013-04-27  Shubham Chaudhary  <shubhamchaudhary92@gmail.com>
+ *      * New: manage_display for Stud class
  *
  * 
  */
@@ -59,15 +63,33 @@
 #endif
 
 #include "function.h"
-#include<iomanip>
-#include<ctime>  // to display time on top-right corner.
+#include <iomanip>
+#include <time.h>
+//#include <ctime>  // to display time on top-right corner.
 //#include<cstdlib>     //Why and what's the difference b/w cstdlib and stdlib.h
 //#include<stdio.h>     //WHY?
 
 using namespace std;
 
 //!!!!!!!!!!!!!!!!!!! Start Editing Here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+const string currentDateTime() {
+    time_t now = time(0);   //current time
+    struct tm tstruct = *localtime(&now);
+    char buf[80];
+    //strftime(buf, sizeof(buf), "%A %b %Y-%m-%d.%X", &tstruct); //Copies into buf the content of format, expanding its format specifiers into the corresponding values that represent the time described in timeptr, with a limit of maxsize characters.
+    strftime(buf, sizeof(buf), "%c", &tstruct);
+    return buf;
+    //        cout << (now->tm_year + 1900) << '-'
+    //             << (now->tm_mon + 1) << '-'
+    //             <<  now->tm_mday
+    //             << endl;
+    //#ifdef LINUX
+    //      if(system("date")) { cout<<"\n\n"; }//DONE portability
+    //#endif
+    //#ifdef WINDOWS
+    //      system("DATE /T");
+    //#endif
+}
 //======================================================================
 //====================== Function Definitions ==========================
 //======================================================================
@@ -86,20 +108,24 @@ void menu_display(){
     #ifdef LINUX
         //cout<<"here";
         //if(system("clear")) { cout<<"\n\n\n\n"; }    //DONE portability
-        if(system("date")) { cout<<"\n\n"; }
+//        if(system("date")) { cout<<"\n\n"; }
     #endif
     #ifdef WINDOWS
         clrscr();         //not working
-        system("cls");
+//        system("DATE /T");
+//        system("cls");
     #endif
+        cout<<currentDateTime();
         cout << "\n##############################################################";
-        cout << "\n#        'b'   --  add bill info                             #"
-                "\n#        'm'   --  manage items in database                  #"
-                "\n#        'a'   --  add data for a new student                #"
-                "\n#        'd'   --  display data for all stusents             #"
-                "\n#        'w'   --  write all student data to disk            #"
-                "\n#        'r'   --  read all student data from disk           #"
+        cout << "\n#             Main Managenment Interface                     #"
+                "\n#        'b'   --  add bill info                             #"
+                "\n#        'd'   --  display data of all students              #"
+                "\n#        'p'   --  display total pending bill of students    #"
                 "\n#        's'   --  search database by Roll No.               #"
+                "\n#        'r'   --  read all student data from disk           #"
+                "\n#        'w'   --  write all student data to disk            #"
+                "\n#        'm'   --  manage food items in database             #"
+                "\n#        'a'   --  add a new student to database             #"
                 "\n#        'x'   --  exit                                      #";
         cout << "\n##############################################################";
         //Stud::readFromDisk();
@@ -120,6 +146,8 @@ void menu_display(){
             Stud::writeToDisk(); break;
         case 'r': //read all students from file
             Stud::readFromDisk(); break;
+        case 'p':
+            Stud::displayTotalPendingBill(); break;
         case 's': //search by roll
             Stud::searchByRoll(); break;
         case 'x': inLoop=false; break; //exit program
@@ -195,19 +223,21 @@ void manage_display(){
     #ifdef LINUX
         //cout<<"here";
         //if(system("clear")) { cout<<"\n\n\n\n"; }    //DONE portability
-        if(system("date")) { cout<<"\n\n"; }
+//        if(system("date")) { cout<<"\n\n"; }
     #endif
     #ifdef WINDOWS
         clrscr();         //not working
+//        system("DATE /T");
         system("cls");
     #endif
+        cout << currentDateTime();
         cout << "\n##############################################################";
         cout << "\n#               Manage the Items stored                      #"\
-                "\n#        'a'   --  add data for a new student                #"
-                "\n#        'd'   --  display data for all stusents             #"
+                "\n#        'a'   --  add a new item in database                #"
+                "\n#        'd'   --  display all items                         #"
                 "\n#        'w'   --  write all item data to disk               #"
                 "\n#        'r'   --  read all item data from disk              #"
-                "\n#        's'   --  search database by Code                   #"
+                "\n#        's'   --  search database by Product Code           #"
                 "\n#        'x'   --  exit management interface                 #";
         cout << "\n##############################################################";
         //Stud::readFromDisk();
@@ -235,7 +265,7 @@ void manage_display(){
 //        getchar();
 //        if(system("clear")) { cout<<"\n\n\n\n"; }    //TODO portability
     }//end while
-    menu_display();
+    //menu_display();   //will automatically go back, because it's already in a loop there
 }
 
 //---menu to be displayed to user--

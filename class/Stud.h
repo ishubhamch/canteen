@@ -4,8 +4,8 @@
  * Copyright 2013 Shubham Chaudhary <shubhamchaudhary92@gmail.com>
  *                Rishabh Gupta <2012rish@gmail.com>
  *      Sachin Tehlan <UE113082>
- *      Upasana Sadana <>
- *
+ *      Upasana Sadana <UE113098>
+ *      Surdeep Singh <UE113094>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -62,7 +62,7 @@
 #include <iostream>
 #endif
 #ifdef WINDOWS
-#include <iostream.h>
+#include <iostream>
 #include <conio.h>
 #endif
 
@@ -105,18 +105,6 @@ protected:
     static bool readDataOnce;
     static Stud* arrap[]; //array of ptrs to Studs
 public:
-    static void add();          //add a new student
-    static void display();      //display all student's info
-    static void readFromDisk(); //read from disk file
-    static void writeToDisk();  //write to disk file
-    static int searchByRoll(bool print = true) ;    //be default print data
-    static void addBillInfo () ;
-    static void addBillInfo_rs () ;
-    Stud(){ isStored=false; bill=0; }    //empty constructor
-    ~Stud();
-    //TODO : rollNo(0),name[0](0),dept[0](0),phoneNo[0](0) // initialised values. first element of each assigned to 0 .
-    //Stud(char )
-    //Stud(char nameIn[],char deptIn[],int rollIn,int phoneIn); //TODO make another constructor to copy input
     //virtual void getData();
     void getData();
     void getData(char);    //DONE
@@ -125,6 +113,19 @@ public:
     void saveToFile(Stud);
     void store();
     void retrieve();
+    static void add();          //add a new student
+    static void display();      //display all student's info
+    static void readFromDisk(); //read from disk file
+    static void writeToDisk();  //write to disk file
+    static int searchByRoll(bool print = true) ;    //be default print data
+    static void addBillInfo () ;
+    static void displayTotalPendingBill();
+    static void addBillInfo_rs () ;
+    //TODO : rollNo(0),name[0](0),dept[0](0),phoneNo[0](0) // initialised values. first element of each assigned to 0 .
+    //Stud(char )
+    //Stud(char nameIn[],char deptIn[],int rollIn,int phoneIn); //TODO make another constructor to copy input
+    Stud(){ isStored=false; bill=0; }    //empty constructor
+    ~Stud();
 };
 ////static variables
 //int Stud::n; //current number of employees

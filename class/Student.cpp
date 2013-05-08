@@ -4,8 +4,8 @@
  * Copyright 2013 Shubham Chaudhary <UE113090>
  *                Rishabh Gupta <UE113080>
  *      Sachin Tehlan <UE113082>
- *      Upasana Sadana <>
- *
+ *      Upasana Sadana <UE113098>
+ *      Surdeep Singh <UE113094>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -47,7 +47,7 @@
 #include <iostream>
 #endif
 #ifdef WINDOWS
-#include <iostream.h>
+#include <iostream>
 #include <conio.h>
 #endif
 
@@ -101,7 +101,7 @@ void Student::outputInfo()
         <<setw(11)<<"Department:"<<dept<<"\n"
         <<setw(11)<<"Phone #:"<<phoneNo<<endl;
 }
-void Student::saveToFile(Student s)
+void Student::saveToFile(Student)
 {
     start :
     ofstream fout;  // change extension to .dat
